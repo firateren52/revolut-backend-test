@@ -1,18 +1,59 @@
-plugins {
-    id 'java'
-    id 'war'
+buildscript {
+    ext {
+        joobyVersion = '1.5.1'
+    }
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "org.jooby:jooby-gradle-plugin:$joobyVersion"
+    }
 }
 
-group 'com.eren.revolut'
-version '1.0-SNAPSHOT'
+apply plugin: "application"
+apply plugin: "jooby"
 
+
+group "com.eren.revolut"
+version "1.0"
+mainClassName = "com.eren.revolut.Application"
 sourceCompatibility = 1.8
 
+
+joobyRun {
+    mainClassName = 'com.eren.revolut.Application'
+    compiler = 'on'
+    includes = ['**/*.class', '**/*.conf', '**/*.properties']
+    excludes = []
+    logLevel = 'info'
+    srcExtensions = [".java", ".conf", ".properties"]
+}
+
+
+ext {
+    joobyVersion = '1.5.1'
+    lombokVersion = '1.16.20'
+    junitVersion = '4.12'
+    restassuredVersion = '3.3.0'
+}
+
+
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
+
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.11'
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile "org.jooby:jooby:$joobyVersion"
+    compile "org.jooby:jooby-undertow:$joobyVersion"
+    compile "org.jooby:jooby-jackson:$joobyVersion"
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    testCompile "junit:junit:$junitVersion"
+    testCompile "io.rest-assured:rest-assured:$restassuredVersion"
 }
+
