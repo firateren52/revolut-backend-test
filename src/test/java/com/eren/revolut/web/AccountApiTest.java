@@ -1,12 +1,15 @@
 package com.eren.revolut.web;
 
+import com.eren.revolut.Application;
 import com.eren.revolut.model.entity.Account;
 import com.eren.revolut.model.Currency;
 import com.eren.revolut.model.web.AccountRequest;
 import com.eren.revolut.model.web.AccountResponse;
 import io.restassured.mapper.ObjectMapperType;
 import org.jooby.Status;
-import org.junit.Assert;
+import org.jooby.test.JoobyRule;
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -15,11 +18,20 @@ import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.*;
 
 public class AccountApiTest extends BaseApiTest {
     private static String ACCOUNT_API_PATH = "/accounts";
+
+    static Application application = new Application();
+
+    @ClassRule
+    public static JoobyRule bootstrap = new JoobyRule(application);
+
+    @Override
+    public Application getApplication() {
+        return application;
+    }
 
     @Test
     public void get_givenExistentId_thenGetAccount() {
@@ -34,7 +46,7 @@ public class AccountApiTest extends BaseApiTest {
                 .extract()
                 .response()
                 .as(Account.class, ObjectMapperType.JACKSON_2);
-        Assert.assertEquals(account, actualAccount);
+        assertThat(account, equalTo(actualAccount));
 
     }
 
@@ -92,7 +104,8 @@ public class AccountApiTest extends BaseApiTest {
                 .extract()
                 .response()
                 .as(AccountResponse.class, ObjectMapperType.JACKSON_2);
-        Assert.assertNotNull(getAccount(accountResponse.getId()));
+        assertThat(accountResponse.getId(), notNullValue());
+
     }
 
     @Test
@@ -114,5 +127,4 @@ public class AccountApiTest extends BaseApiTest {
                 .statusCode(Status.BAD_REQUEST.value())
                 .body(containsString("currency cannot be null"));
     }
-
 }

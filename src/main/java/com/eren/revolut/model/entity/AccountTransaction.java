@@ -1,21 +1,22 @@
 package com.eren.revolut.model.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.UUID;
 
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode
+@ToString
 public class AccountTransaction {
 
-    private final UUID id;
-    private final Account account;
-    private final Transaction transaction;
-    private final BigDecimal amount;
+    private UUID id;
+    private UUID account;
+    private UUID transaction;
+    private BigDecimal amount;
+    private Instant createDate;
 }

@@ -19,7 +19,6 @@ public class TransferRequest {
     private BigDecimal amount;
 
     public void validate() {
-        //TODO(firat.eren) add error messages to config file
         if(senderAccount == null) {
             throw new Err(Status.BAD_REQUEST, "senderAccount cannot be null");
         }

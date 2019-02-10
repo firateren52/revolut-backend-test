@@ -4,16 +4,17 @@ import com.eren.revolut.model.entity.Transaction;
 import com.eren.revolut.repository.TransactionRepository;
 
 import javax.inject.Singleton;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Singleton
 public class TransactionMemoryRepository implements TransactionRepository {
 
-    private final Set<Transaction> table = new HashSet<>();
+    private final Map<UUID, Transaction> table = new ConcurrentHashMap<>();
 
     @Override
     public void create(Transaction transaction) {
-        table.add(transaction);
+        table.put(transaction.getId(), transaction);
     }
 }

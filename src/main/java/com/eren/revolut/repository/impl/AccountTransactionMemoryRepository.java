@@ -1,19 +1,23 @@
 package com.eren.revolut.repository.impl;
 
 
-import com.eren.revolut.model.entity.Account;
 import com.eren.revolut.model.entity.AccountTransaction;
 import com.eren.revolut.model.entity.Transaction;
 import com.eren.revolut.repository.AccountTransactionRepository;
 
 import javax.inject.Singleton;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Singleton
 public class AccountTransactionMemoryRepository implements AccountTransactionRepository {
 
-    private final Set<AccountTransaction> table = new HashSet<>();
+    private final Map<UUID, AccountTransaction> table = new ConcurrentHashMap<>();
 
     @Override
     public void createTransfer(Transaction transaction) {
@@ -23,25 +27,32 @@ public class AccountTransactionMemoryRepository implements AccountTransactionRep
 
     @Override
     public void createWithdraw(Transaction transaction) {
-        AccountTransaction senderTransaction = AccountTransaction.builder().id(UUID.randomUUID())
-                .account(transaction.getSenderAccount()).transaction(transaction)
-                .amount(transaction.getAmount().negate()).build();
-        table.add(senderTransaction);
+        AccountTransaction accountTransaction = AccountTransaction.builder().id(UUID.randomUUID())
+                .account(transaction.getSenderAccount().getId()).transaction(transaction.getId())
+                .amount(transaction.getAmount().negate()).createDate(transaction.getCreateDate()).build();
+        table.put(accountTransaction.getId(), accountTransaction);
     }
 
     @Override
     public void createDeposit(Transaction transaction) {
-        AccountTransaction receiverTransaction = AccountTransaction.builder().id(UUID.randomUUID())
-                .account(transaction.getReceiverAccount()).transaction(transaction)
-                .amount(transaction.getAmount()).build();
-        table.add(receiverTransaction);
+        AccountTransaction accountTransaction = AccountTransaction.builder().id(UUID.randomUUID())
+                .account(transaction.getReceiverAccount().getId()).transaction(transaction.getId())
+                .amount(transaction.getAmount()).createDate(transaction.getCreateDate()).build();
+        table.put(accountTransaction.getId(), accountTransaction);
     }
 
     @Override
-    public BigDecimal getBalance(Account account) {
-        return table.stream().filter(row -> row.getAccount().equals(account))
+    public BigDecimal getBalance(UUID account) {
+        return table.values().stream().filter(row -> row.getAccount().equals(account))
                 .map(AccountTransaction::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    @Override
+    public List<AccountTransaction> getAccountTransactions(UUID account) {
+        return table.values().stream().filter(row -> row.getAccount().equals(account))
+                .sorted(Comparator.comparing(AccountTransaction::getCreateDate))
+                .collect(Collectors.toList());
     }
 
 }

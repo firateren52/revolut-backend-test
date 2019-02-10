@@ -13,9 +13,15 @@ buildscript {
     }
 }
 
-apply plugin: "application"
-apply plugin: "jooby"
+plugins {
+    id 'java'
+    id 'idea'
+    id 'application'
+    id "io.spring.dependency-management" version "1.0.5.RELEASE"
+    id "com.github.johnrengelman.shadow" version "2.0.3"
+}
 
+apply plugin: "jooby"
 
 group "com.eren.revolut"
 version "1.0"
@@ -29,7 +35,6 @@ joobyRun {
     includes = ['**/*.class', '**/*.conf', '**/*.properties']
     excludes = []
     logLevel = 'info'
-    srcExtensions = [".java", ".conf", ".properties"]
 }
 
 
@@ -53,7 +58,7 @@ dependencies {
     compile "org.jooby:jooby-jackson:$joobyVersion"
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
-    testCompile "junit:junit:$junitVersion"
-    testCompile "io.rest-assured:rest-assured:$restassuredVersion"
+    testImplementation "junit:junit:$junitVersion"
+    testImplementation "io.rest-assured:rest-assured:$restassuredVersion"
 }
 

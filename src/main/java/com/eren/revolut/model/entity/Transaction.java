@@ -2,10 +2,7 @@ package com.eren.revolut.model.entity;
 
 import com.eren.revolut.model.TransactionStatus;
 import com.eren.revolut.model.TransactionType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 
 import java.math.BigDecimal;
@@ -16,6 +13,7 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @EqualsAndHashCode
+@ToString
 public class Transaction {
 
     private final UUID id;

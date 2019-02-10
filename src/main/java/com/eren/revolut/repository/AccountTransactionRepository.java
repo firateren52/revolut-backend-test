@@ -1,12 +1,16 @@
 package com.eren.revolut.repository;
 
-import com.eren.revolut.model.entity.Account;
+import com.eren.revolut.model.entity.AccountTransaction;
 import com.eren.revolut.model.entity.Transaction;
+import org.jooby.mvc.Body;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.UUID;
 
 /**
- * Account Transactio
+ * Account Transaction Repository
+ *
  * @see <a href="https://www.martinfowler.com/eaaDev/AccountingTransaction.html">Accounting Transaction article by Martin Fowler</a>
  */
 public interface AccountTransactionRepository {
@@ -15,12 +19,11 @@ public interface AccountTransactionRepository {
      * Create double entry transactions one for sender and one for receiver account
      *
      * @param transaction the transaction
-     *
      */
     void createTransfer(Transaction transaction);
 
     /**
-     * reate entry transactions one for sender and one for receiver account
+     * Create entry transactions one for sender and one for receiver account
      *
      * @param transaction the transaction
      */
@@ -34,11 +37,19 @@ public interface AccountTransactionRepository {
     void createDeposit(Transaction transaction);
 
     /**
-     * Sum of all transaction amounts for the given account
+     * Gets sum of all transaction amounts for the account
      *
      * @param account the account
      * @return the balance
      */
-    BigDecimal getBalance(Account account);
+    BigDecimal getBalance(UUID account);
+
+    /**
+     * Gets account transactions by the account.
+     *
+     * @param account the account
+     * @return the account transactions
+     */
+    List<AccountTransaction> getAccountTransactions(@Body UUID account);
 
 }

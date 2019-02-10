@@ -5,36 +5,31 @@ import com.eren.revolut.repository.AccountRepository;
 
 import javax.inject.Singleton;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Singleton
 public class AccountMemoryRepository implements AccountRepository {
 
-    private final Set<Account> table = new HashSet<>();
+    private final Map<UUID, Account> table = new ConcurrentHashMap<>();
 
     @Override
     public Optional<Account> get(UUID id) {
-        return table.stream()
+        return table.values().stream()
                 .filter(account -> account.getId().equals(id))
                 .findFirst();
     }
 
     @Override
-    public Optional<Account> get(UUID userId, Currency currency) {
-        return null;
-    }
-
-    @Override
     public List<Account> getAll(UUID userId) {
-        return table.stream()
+        return table.values().stream()
                 .filter(account -> account.getUserId().equals(userId))
                 .collect(Collectors.toList());
     }
 
     @Override
     public void create(Account account) {
-        //TODO(firat.eren) check for duplicate ids
-        table.add(account);
+        table.put(account.getId(), account);
     }
 
 }
