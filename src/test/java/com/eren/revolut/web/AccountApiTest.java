@@ -1,35 +1,28 @@
 package com.eren.revolut.web;
 
-import com.eren.revolut.Application;
-import com.eren.revolut.model.Account;
+import com.eren.revolut.model.entity.Account;
 import com.eren.revolut.model.Currency;
 import com.eren.revolut.model.web.AccountRequest;
 import com.eren.revolut.model.web.AccountResponse;
-import com.eren.revolut.service.AccountService;
 import io.restassured.mapper.ObjectMapperType;
 import org.jooby.Status;
-import org.jooby.test.JoobyRule;
 import org.junit.Assert;
-import org.junit.ClassRule;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.containsString;
 
-public class AccountApiTest {
-    private static String CONTENT_TYPE_JSON = "application/json";
+public class AccountApiTest extends BaseApiTest {
     private static String ACCOUNT_API_PATH = "/accounts";
 
-    private static Application application = new Application();
-
-    @ClassRule
-    public static JoobyRule bootstrap = new JoobyRule(application);
-
     @Test
-    public void getAccount_givenExistentId_thenGetAccount() {
+    public void get_givenExistentId_thenGetAccount() {
         UUID userId = UUID.randomUUID();
         Account actualAccount = createAccount(new AccountRequest(userId, Currency.GBP));
 
@@ -46,7 +39,7 @@ public class AccountApiTest {
     }
 
     @Test
-    public void getAccount_givenNonexistentId_thenGetNotFoundError() {
+    public void get_givenNonexistentId_thenThrowNotFoundError() {
         UUID id = UUID.randomUUID();
 
         given().when()
@@ -58,7 +51,7 @@ public class AccountApiTest {
     }
 
     @Test
-    public void getAccountsByUser_givenExistentId_thenGetAccount2() {
+    public void getAll_givenExistentId_thenGetAccount() {
         UUID userId = UUID.randomUUID();
         Account actualGBPAccount = createAccount(new AccountRequest(userId, Currency.GBP));
         Account actualEURAccount = createAccount(new AccountRequest(userId, Currency.EUR));
@@ -77,7 +70,7 @@ public class AccountApiTest {
     }
 
     @Test
-    public void getAccountsByUser_givenNonexistentId_thenThrowError() {
+    public void getAll_givenNonexistentId_thenThrowServerError() {
         given().when()
                 .contentType(CONTENT_TYPE_JSON)
                 .get(ACCOUNT_API_PATH + "?userId=" + null)
@@ -88,7 +81,7 @@ public class AccountApiTest {
     }
 
     @Test
-    public void createAccount_givenValidUseridAndCurrency_thenCreateNewAccount() {
+    public void create_givenValidUseridAndCurrency_thenCreateNewAccount() {
         UUID userId = UUID.randomUUID();
         AccountResponse accountResponse = given().when()
                 .body(new AccountRequest(userId, Currency.EUR))
@@ -103,7 +96,7 @@ public class AccountApiTest {
     }
 
     @Test
-    public void createAccount_givenInvalidUseridAndCurrency_thenThrowError() {
+    public void create_givenInvalidUseridAndCurrency_thenThrowBadRequestError() {
         given().when()
                 .body(new AccountRequest(null, Currency.EUR))
                 .contentType(CONTENT_TYPE_JSON)
@@ -120,14 +113,6 @@ public class AccountApiTest {
                 .then()
                 .statusCode(Status.BAD_REQUEST.value())
                 .body(containsString("currency cannot be null"));
-    }
-
-    private Account getAccount(UUID id) {
-        return application.require(AccountService.class).getAccount(id);
-    }
-
-    private Account createAccount(AccountRequest request) {
-        return application.require(AccountService.class).createAccount(request);
     }
 
 }

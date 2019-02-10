@@ -1,19 +1,17 @@
 package com.eren.revolut.service.impl;
 
-import com.eren.revolut.model.Account;
+import com.eren.revolut.model.entity.Account;
 import com.eren.revolut.model.web.AccountRequest;
 import com.eren.revolut.repository.AccountRepository;
+import com.eren.revolut.repository.AccountTransactionRepository;
 import com.eren.revolut.service.AccountService;
 import org.jooby.Err;
 import org.jooby.Status;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 
 @Singleton
@@ -21,28 +19,31 @@ public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
 
+    private final AccountTransactionRepository accountTransactionRepository;
+
     @Inject
-    public AccountServiceImpl(AccountRepository accountRepository) {
+    public AccountServiceImpl(AccountRepository accountRepository, AccountTransactionRepository accountTransactionRepository) {
         this.accountRepository = accountRepository;
+        this.accountTransactionRepository = accountTransactionRepository;
     }
 
     @Override
-    public Account getAccount(UUID id) {
-        return accountRepository.getAccount(id).orElseThrow(() -> new Err(Status.NOT_FOUND, "Account not found"));
+    public Account get(UUID id) {
+        return accountRepository.get(id).orElseThrow(() -> new Err(Status.NOT_FOUND, "Account not found"));
     }
 
     @Override
-    public List<Account> getAccountsByUser(UUID userId) {
-        return accountRepository.getAccountsByUser(userId);
+    public List<Account> getAll(UUID userId) {
+        return accountRepository.getAll(userId);
     }
 
     @Override
-    public Account createAccount(AccountRequest accountRequest) {
-        accountRequest.validate();
-        Account account = Account.builder().id(UUID.randomUUID()).userId(accountRequest.getUserId())
-                .currency(accountRequest.getCurrency()).balance(BigDecimal.ZERO).createDate(Instant.now())
+    public Account create(AccountRequest request) {
+        request.validate();
+        Account account = Account.builder().id(UUID.randomUUID()).userId(request.getUserId())
+                .currency(request.getCurrency()).createDate(Instant.now())
                 .build();
-        accountRepository.createAccount(account);
+        accountRepository.create(account);
         return account;
     }
 

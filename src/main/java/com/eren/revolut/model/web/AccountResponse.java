@@ -11,6 +11,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AccountResponse {
+
     private UUID id;
     private Instant createDate;
 }

@@ -13,6 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AccountRequest {
+
     private UUID userId;
     private Currency currency;
 

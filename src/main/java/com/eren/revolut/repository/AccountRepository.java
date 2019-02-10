@@ -1,20 +1,17 @@
 package com.eren.revolut.repository;
 
-import com.eren.revolut.model.Account;
+import com.eren.revolut.model.entity.Account;
 
-import java.util.Currency;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 public interface AccountRepository {
 
-    Optional<Account> getAccount(UUID id);
+    Optional<Account> get(UUID id);
 
-    Optional<Account> getAccount(UUID userId, Currency currency);
+    List<Account> getAll(UUID userId);
 
-    List<Account> getAccountsByUser(UUID userId);
-
-    void createAccount(Account account);
+    void create(Account account);
 
 }
